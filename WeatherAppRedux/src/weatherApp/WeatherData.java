@@ -13,14 +13,16 @@ public class WeatherData {
 	public String tempUnits;
 	public String speedUnits;
 	public String time;
+	public int weatherCode;
+	public String condition;
 	
 	public WeatherData(String data,boolean US) {
 		latitude = Double.parseDouble(parseData("latitude", data));
 		longitude = Double.parseDouble(parseData("longitude", data));
 		
 		//changing the link, connecting to a weather API to pull this longitude's data
-		String url = String.format("https://api.open-meteo.com/v1/forecast?latitude=%f&longitude=%f&current=temperature_2m,wind_speed_10m",latitude,longitude);
-		data = ConnectAPI(url);
+		String url = String.format("https://api.open-meteo.com/v1/forecast?latitude=%f&longitude=%f&current=temperature_2m,rain,weather_code,wind_speed_10m",latitude,longitude);
+		data = Main.ConnectAPI(url);
 		
 		tempUnits = parseData("temperature_2m",data);
 		speedUnits = parseData("wind_speed_10m",data);
@@ -29,6 +31,9 @@ public class WeatherData {
 
 		temperature = Double.parseDouble(parseData("temperature_2m",data));
 		windSpeed = Double.parseDouble(parseData("wind_speed_10m",data));
+		
+		weatherCode = Integer.parseInt(parseData("weather_code",data));
+		condition = weatherCode(weatherCode);
 
 		time = parseData("time",data);	
 		time = time.substring(time.indexOf("T")+1);
@@ -43,18 +48,18 @@ public class WeatherData {
 			tempUnits = "°F";
 			temperature = (temperature*1.8)+32;
 			speedUnits = "mph";
-			windSpeed = windSpeed/1.609344;
+			windSpeed = (windSpeed/1.609344);
 		}
 		time = numTime + time.substring(time.indexOf(":"));
 	}
 	
 	/*
-	 * method intakes the string we're looking for in our JSON data,finds the index of the result
+	 * method takes the string we're looking for in our string of data,finds the index of the value
 	 * returns index
 	 * purpose: make parsing easier 
 	 * 
 	 * */
-	public int findIndex(String x,String data) {
+	public static int findIndex(String x,String data) {
 		int length = (x+"\":").length();
 		int y = data.indexOf(x+"\":") + length;
 		return y;
@@ -64,12 +69,12 @@ public class WeatherData {
 	 * method used to replace repetitive substring usage to get pieces of string-ified JSON data
 	 * returns string, still needs to use parseInt/parseDouble for string returned
 	 * 
-	 * params var - keyword we're looking for
+	 * param var - keyword we're looking for
 	 * param src - the 'source', in this case its our long string of data
 	 * */
-	public String parseData(String var,String src) {
+	public static String parseData(String var,String src) {
 		int x = findIndex(var,src);
-		String result = "0.0";
+		String result;
 		try {
 		 result = (src.substring(x,src.indexOf(",",x)).replaceAll("\"", ""));
 		}catch(Exception e) {
@@ -79,33 +84,44 @@ public class WeatherData {
 		
 	}
 	
-	/* toString method for weatherData objects, prints relevant information */
-	public String toString() {
-		return String.format("Current weather as of %s is approximately %.1f%s, with windspeeds of %.1f%s",time,temperature,tempUnits,0.0,speedUnits);
+	public String weatherCode(int c) {
+		String cond = "";
+		if (c == 0)
+			cond = "clear";
+		else if (c <= 3)
+			cond = "partly cloudy";
+		else if (c == 45 || c == 48)
+			cond = "fog";
+		else if (c >= 51 && c <= 57)
+			cond = "light rain/drizzle";
+		else if (c == 61)
+			cond = "slight rain";
+		else if (c == 63)
+			cond = "moderate rain";
+		else if (c >= 65 && c <= 67)
+			cond = "heavy rain";
+		else if (c == 71)
+			cond = "light snowfall";
+		else if (c == 73)
+			cond = "moderate snowfall";
+		else if (c == 75)
+			cond = "heavy snowfall";
+		else if (c == 80)
+			cond = "light rain showers";
+		else if (c == 81)
+			cond = "moderate rain showers";
+		else if (c == 85)
+			cond = "slight snow showers";
+		else if (c == 86)
+			cond = "heavy snow showers";
+		else if (c == 95)
+			cond = "thunderstorms";
+		return cond;
 	}
 	
-	public static String ConnectAPI(String link) {
-	      try {
-	          URL url = new URL(link);
-	          HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-	          connection.setRequestMethod("GET");
+	/* toString method for weatherData objects, prints relevant information */
+	public String toString() {
+		return String.format("'s weather as of %s is %s at approximately %.1f%s, with windspeeds of %.1f%s.",time,condition,temperature,tempUnits,windSpeed,speedUnits);
+	}
 	
-	          int responseCode = connection.getResponseCode();
-	          if(responseCode != 200)
-	        	  System.out.println("Failed Connection!");
-	
-	          BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-	          String inputLine;
-	          String content = "";
-	          while ((inputLine = in.readLine()) != null) {
-	              content += inputLine;
-	          }
-	          in.close();
-	          connection.disconnect();
-	          return content;
-	      } catch (Exception e) {
-	          e.printStackTrace();
-	          return "";
-	      }
-	  }
 }
