@@ -15,7 +15,10 @@ public class WeatherData {
 	public String time;
 	public int weatherCode;
 	public String condition;
-	
+
+	/* WeatherData constructor
+ 	* param data is info provided from geolocation api, boolean US determines units of measurement
+  	*/
 	public WeatherData(String data,boolean US) {
 		latitude = Double.parseDouble(parseData("latitude", data));
 		longitude = Double.parseDouble(parseData("longitude", data));
@@ -83,7 +86,9 @@ public class WeatherData {
 		return result;
 		
 	}
-	
+
+	/* Method that determines weather condition using U.S weathercodes, provided by API
+  	*/
 	public String weatherCode(int c) {
 		String cond = "";
 		if (c == 0)
