@@ -4,18 +4,8 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Arrays;
-//import org.json.JSONObject;
 import java.util.Scanner;
 
-
-//public class URLConnectionExample {
-//    
-//}
-
-/*
- * TODO: Try to figure out how to implement a GUI, but it's fine if you can't. Formatting strings
- * also works fine.
- * */
 public class Main {
 
 	public static void main(String[] args) {
