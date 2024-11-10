@@ -21,16 +21,25 @@ public class appGUI extends JFrame {
 	}
 
 	private void addGUIComponents() {
-		//txt field for search
+		//Text field for search
 		JTextField search = new JTextField();
 		search.setBounds(15,15,351,45); //x, y, width, height
 		search.setFont(new Font("Dialog",Font.PLAIN,24)); //Font constructor (name, font 'value', font size)
 		add(search);
 		
-		//button for searching
+		//searchButton
 		JButton searchButton = new JButton(loadImage("src/Icons/search.png"));
 		searchButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		searchButton.setBounds(375,13,47,45);
+//		searchButton.addActionListener(new ActionListener(
+//				@Override
+//				public void actionPerformed(ActionEvent e) {
+//					String input = search.getText();
+//					if (input.replaceAll("\\s","").length() <= 0)
+//						return;
+//						
+//				}
+//				));
 		add(searchButton);
 		
 		//weatherImage
@@ -45,19 +54,23 @@ public class appGUI extends JFrame {
 		temperatureText.setHorizontalAlignment(SwingConstants.CENTER);
 		add(temperatureText);
 		
+		//humidity text
 		JLabel humidityText = new JLabel("<html><b>Humidity<b> 100%<html>");
 		humidityText.setFont(new Font("Dialog",Font.PLAIN,16));
 		humidityText.setBounds(90,500,85,55);
 		add(humidityText);
 		
+		//humidity picture
 		JLabel humidityImage = new JLabel(loadImage("src/Icons/humidity.png"));
 		humidityImage.setBounds(15,500,74,66);
 		add(humidityImage);
 		
+		//windspeed pic
 		JLabel windspeedImage = new JLabel(loadImage("src/Icons/windspeed.png"));
 		windspeedImage.setBounds(220,500,74,66);
 		add(windspeedImage);
 		
+		//windspeed text
 		JLabel windText = new JLabel("<html><b>Windspeed<b> 100%<html>");
 		windText.setFont(new Font ("Dialog", Font.PLAIN,16));
 		windText.setBounds(0,0,0,0);
