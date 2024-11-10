@@ -7,18 +7,19 @@ import java.util.Arrays;
 //import org.json.JSONObject;
 import java.util.Scanner;
 
+import javax.swing.SwingUtilities;
 
-//public class URLConnectionExample {
-//    
-//}
+import goalTrack.AppFrame;
 
-/*
- * TODO: Try to figure out how to implement a GUI, but it's fine if you can't. Formatting strings
- * also works fine.
- * */
 public class Main {
-
 	public static void main(String[] args) {
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				new appGUI().setVisible(true);
+			}
+		});
+		
 		Scanner sc = new Scanner(System.in);
 		boolean repeat = false;
 		String answer;
@@ -27,25 +28,24 @@ public class Main {
 		
 		do {
 		System.out.print("Please input the name of the city you want to check: ");
-		String cityName = sc.nextLine();
-		cityName = cityName.replaceAll(" ","+");
+		//city name w/ "+" in blank spaces
+		String cityName = sc.nextLine().replaceAll(" ","+"); 
 		
-		//link to API
+		
+		//open meteo API
 		String link = String.format("https://geocoding-api.open-meteo.com/v1/search?name=%s&count=10&language=en&format=json",cityName);
-		String locationInfo = ConnectAPI(link); //if user types in an invalid place, len data will be short.
+		String locationInfo = ConnectAPI(link); 
 		
+		//if the city isn't found, length will be < 50
 		if (locationInfo.length() < 50)
 			valid = false;
-		else
-			valid = true;
 		
-		if (valid) //if the city they typed exists
+		if (valid)
 		{
 		locationInfo = locationInfo.substring(locationInfo.indexOf(","));
 		
 		String[] cities = locationInfo.split("\\{"); //removes extra { in JSON data, splits info up by location in case of multiple cities w/ same name.
 		
-		//using this to properly format strings, might not be needed
 		for (int i = 0;i<cities.length;i++) {
 			cities[i] = cities[i].replaceAll("\\{", " ");
 			cities[i] = cities[i].replaceAll("}", " ");
@@ -55,11 +55,11 @@ public class Main {
 		for (int i = 0;i<cities.length;i++) {
 				System.out.printf("%s, %s, %s? (yes/no): ",cityName.replaceAll("\\+", " "), WeatherData.parseData("admin1", cities[i]),WeatherData.parseData("admin2", cities[i]));
 				answer = sc.nextLine();
-				if (answer.toLowerCase().equals("yes")) { //if we got it, continue w/ program
+				if (answer.toLowerCase().equals("yes")) {
 					locationInfo = cities[i];
 					break;
 				}
-				else { //else (if we run out of options), invalid city; prompt user to try again
+				else { //if we run out of options, invalid city: prompt user to try again
 					if (i == cities.length-1) {
 						valid = false; 
 						System.out.println("City not found.");
@@ -70,7 +70,7 @@ public class Main {
 		else
 			System.out.println("City not found.");
 		
-		//if we still have a city, keep going, else just reset loop
+		//if we still have a city, keep going, else reset loop
 		if (valid) {
 			System.out.print("Would you like to use US measurements or global? (input 'US' or 'GLOBAL') ");
 			String measurements = sc.nextLine();			
@@ -95,6 +95,7 @@ public class Main {
 		
 	}
 
+	@SuppressWarnings("deprecation")
 	public static String ConnectAPI(String link) {
 	      try {
 	          URL url = new URL(link);
