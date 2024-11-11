@@ -16,7 +16,64 @@ public class WeatherData {
 	public int weatherCode;
 	public String condition;
 	
-	public WeatherData(String data,boolean US) {
+	public WeatherData(String lo) {
+		boolean valid = true;
+		boolean us_measure = true;
+
+		String link = String.format("https://geocoding-api.open-meteo.com/v1/search?name=%s&count=10&language=en&format=json",lo);
+		String locationInfo = Main.ConnectAPI(link); 
+		
+		//if the city isn't found, length will be < 50
+		if (locationInfo.length() < 50)
+			valid = false;
+				
+		if (valid) {
+			locationInfo = locationInfo.substring(locationInfo.indexOf(","));
+			String[] cities = locationInfo.split("\\{"); //removes extra { in JSON data, splits cities w/ same name.
+			
+			for (int i = 0;i<cities.length;i++) {
+				cities[i] = cities[i].replaceAll("\\{", " ");
+				cities[i] = cities[i].replaceAll("}", " ");
+			}
+			setWeatherData(cities[0],us_measure);
+		}
+			
+				
+			/* USED TO: iterate over cities to make sure we're checking the right place
+			 * before collecting weatherData
+			 * 
+			 * TODO: Make this segment work by either showing a list or just assuming the first in list w/ 
+			 * a next button
+			 */
+			
+//			for (int i = 0;i<cities.length;i++) {
+//					System.out.printf("%s, %s, %s? (yes/no): ",cityName.replaceAll("\\+", " "), WeatherData.parseData("admin1", cities[i]),WeatherData.parseData("admin2", cities[i]));
+//						answer = sc.nextLine();
+//						if (answer.toLowerCase().equals("yes")) {
+//							locationInfo = cities[i];
+//							break;
+//						}
+//						else { //if we run out of options, invalid city: prompt user to try again
+//							if (i == cities.length-1) {
+//								valid = false; 
+//								System.out.println("City not found.");
+//							}
+//						}
+//					}
+//				}
+				else;
+					// OUTPUT "City not found"
+				
+/*TODO: 
+ * Implement button for US/Global Measurements
+ * Implement city not found error outputs, list of cities possible
+ * Call constructor through this one.
+ * */ 				
+	}
+	
+	
+	
+	public void setWeatherData(String data,boolean US) {
 		latitude = Double.parseDouble(parseData("latitude", data));
 		longitude = Double.parseDouble(parseData("longitude", data));
 		
@@ -69,8 +126,8 @@ public class WeatherData {
 	 * method used to replace repetitive substring usage to get pieces of string-ified JSON data
 	 * returns string, still needs to use parseInt/parseDouble for string returned
 	 * 
-	 * param var - keyword we're looking for
-	 * param src - the 'source', in this case its our long string of data
+	 * @param var - keyword we're looking for
+	 * @param src - 'source', our string of data
 	 * */
 	public static String parseData(String var,String src) {
 		int x = findIndex(var,src);
@@ -84,6 +141,8 @@ public class WeatherData {
 		
 	}
 	
+	/* returns string that associated with weather codes
+	 */
 	public String weatherCode(int c) {
 		String cond = "";
 		if (c == 0)
