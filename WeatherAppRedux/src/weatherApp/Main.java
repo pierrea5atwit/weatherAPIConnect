@@ -22,15 +22,15 @@ public class Main {
 		boolean repeat = false;
 		String answer;
 		boolean valid = true;
-		boolean us_measure;
+		boolean us_measure = true;}
+	
+/* 		OLD CODE				*/
 		
-		do {
-		System.out.print("Please input the name of the city you want to check: ");
-		//city name w/ "+" in blank spaces
-		String cityName = sc.nextLine().replaceAll(" ","+"); 
-		WeatherData X = new WeatherData(cityName);
+//		do {
+//		System.out.print("Please input the name of the city you want to check: ");
+//		String cityName = sc.nextLine().replaceAll(" ","+"); 
+//		WeatherData X = new WeatherData(cityName);
 
-				
 //		String link = String.format("https://geocoding-api.open-meteo.com/v1/search?name=%s&count=10&language=en&format=json",cityName);
 //		String locationInfo = ConnectAPI(link); 
 //		//if the city isn't found, length will be < 50
@@ -50,7 +50,7 @@ public class Main {
 //		
 //		//iterate over cities to make sure we're checking the right place before collecting weatherData
 //		for (int i = 0;i<cities.length;i++) {
-//				System.out.printf("%s, %s, %s? (yes/no): ",cityName.replaceAll("\\+", " "), WeatherData.parseData("admin1", cities[i]),WeatherData.parseData("admin2", cities[i]));
+//				String.format("%s, %s, %s? (yes/no): ",cityName.replaceAll("\\+", " "), WeatherData.parseData("admin1", cities[i]),WeatherData.parseData("admin2", cities[i]));
 //				answer = sc.nextLine();
 //				if (answer.toLowerCase().equals("yes")) {
 //					locationInfo = cities[i];
@@ -79,18 +79,18 @@ public class Main {
 //			System.out.println(cityName.replaceAll("\\+", " ") + ex);
 //		}
 //		
-		System.out.print("Would you like to input another city? (yes/no): ");
-		answer = sc.nextLine().toLowerCase();
-		if (answer.equals("yes"))
-			repeat = true;
-		else
-			repeat = false;
-		//end of program, continues do-while loop
-		}while(repeat);
-		
-		sc.close();
-		
-	}
+//		System.out.print("Would you like to input another city? (yes/no): ");
+//		answer = sc.nextLine().toLowerCase();
+//		if (answer.equals("yes"))
+//			repeat = true;
+//		else
+//			repeat = false;
+//		//end of program, continues do-while loop
+//		}while(repeat);
+//		
+//		sc.close();
+//		
+//	}
 
 	@SuppressWarnings("deprecation")
 	public static String ConnectAPI(String link) {

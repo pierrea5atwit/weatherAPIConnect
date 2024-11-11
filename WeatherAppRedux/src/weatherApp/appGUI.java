@@ -49,15 +49,15 @@ public class appGUI extends JFrame {
 		cityText.setHorizontalAlignment(SwingConstants.CENTER);
 		add(cityText);
 		
-		//humidity text
-		JLabel humidityText = new JLabel("<html><b>Humidity<b> 100%<html>");
-		humidityText.setFont(new Font("Dialog",Font.PLAIN,16));
-		humidityText.setBounds(90,500,85,55);
-		add(humidityText);
+		//TIME text
+		JLabel timeText = new JLabel("<html><b>Current Time<b> ");
+		timeText.setFont(new Font("Dialog",Font.PLAIN,16));
+		timeText.setBounds(90,490,85,55);
+		add(timeText);
 		
 		//humidity picture
-		JLabel humidityImage = new JLabel(loadImage("src/Icons/humidity.png"));
-		humidityImage.setBounds(15,500,74,66);
+		JLabel humidityImage = new JLabel(loadImage("src/Icons/clock.png"));
+		humidityImage.setBounds(15,500,85,55);
 		add(humidityImage);
 		
 		//windspeed pic
@@ -75,11 +75,10 @@ public class appGUI extends JFrame {
 		JButton searchButton = new JButton(loadImage("src/Icons/search.png"));
 		searchButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		searchButton.setBounds(375,13,47,45);
-		
 		searchButton.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					String input = search.getText();
+					String input = search.getText().replaceAll(" ", "+");
 					if (input.replaceAll("\\s","").length() <= 0)
 						return;
 					WeatherData weather = new WeatherData(input);
@@ -97,8 +96,10 @@ public class appGUI extends JFrame {
 						weatherImg.setIcon(loadImage("src/Icons/clear.png"));
 					}
 					
-					temperatureText.setText(weather.temperature + weather.tempUnits);
-					windText.setText(weather.windSpeed + weather.speedUnits);
+					cityText.setText(weather.city);
+					temperatureText.setText(String.format("<html>%.1f%s<html>",weather.temperature, weather.tempUnits));
+					windText.setText(String.format("<html><b>Windspeed</b> %.1f<html>",weather.windSpeed) + weather.speedUnits);
+					timeText.setText(String.format("<html><b>Current Time<b> %s<html>",weather.time));
 					/* TODO: Figure out how to represent missing cities' data w/o errors
 					 * Add a relevant weather field to replace humidity
 					 * Improve runtime
@@ -106,6 +107,24 @@ public class appGUI extends JFrame {
 				}
 		});
 		add(searchButton);
+		
+		//Up Arrow Button (previous city)
+		JButton arrowUp = new JButton(loadImage("src/Icons/cloudy.png"));
+		arrowUp.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		arrowUp.setBounds(375,130,47,45);
+		arrowUp.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+			}
+		});
+		add(arrowUp);
+		
+		//Down Arrow Button (next city)
+		JButton arrowDown = new JButton(loadImage("src/Icons/cloudy.png"));
+		arrowDown.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		arrowDown.setBounds(375,170,47,45);
+		add(arrowDown);
 	}
 	
 	private ImageIcon loadImage(String path) {

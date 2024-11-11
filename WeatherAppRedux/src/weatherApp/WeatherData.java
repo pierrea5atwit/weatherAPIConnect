@@ -5,6 +5,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class WeatherData {
+	public int listIndex;
+	public boolean multipleCities;
 	public double temperature;
 	public double windSpeed;
 	public String url;
@@ -15,11 +17,12 @@ public class WeatherData {
 	public String time;
 	public int weatherCode;
 	public String condition;
+	public String city;
 	
 	public WeatherData(String lo) {
 		boolean valid = true;
 		boolean us_measure = true;
-
+		
 		String link = String.format("https://geocoding-api.open-meteo.com/v1/search?name=%s&count=10&language=en&format=json",lo);
 		String locationInfo = Main.ConnectAPI(link); 
 		
@@ -30,12 +33,20 @@ public class WeatherData {
 		if (valid) {
 			locationInfo = locationInfo.substring(locationInfo.indexOf(","));
 			String[] cities = locationInfo.split("\\{"); //removes extra { in JSON data, splits cities w/ same name.
+			multipleCities = (cities.length > 1) ? true : false;
+			listIndex = 0;
 			
 			for (int i = 0;i<cities.length;i++) {
 				cities[i] = cities[i].replaceAll("\\{", " ");
 				cities[i] = cities[i].replaceAll("}", " ");
 			}
-			setWeatherData(cities[0],us_measure);
+			if(multipleCities){
+				city = String.format("%s, %s",lo.replaceAll("\\+", " "), WeatherData.parseData("admin1", cities[listIndex]));
+				setWeatherData(cities[listIndex],us_measure);
+			}else{
+				city = String.format("%s, %s",lo.replaceAll("\\+", " "), WeatherData.parseData("admin1", cities[0]));
+				setWeatherData(cities[0],us_measure);
+			}
 		}
 			
 				
@@ -66,7 +77,8 @@ public class WeatherData {
 				
 /*TODO: 
  * Implement button for US/Global Measurements
- * Implement city not found error outputs, list of cities possible
+ * Implement city not found error
+ * Implement arrows for list of cities possible
  * Call constructor through this one.
  * */ 				
 	}
