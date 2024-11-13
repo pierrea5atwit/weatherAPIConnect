@@ -10,6 +10,7 @@ public class WeatherData {
 	public double temperature;
 	public double windSpeed;
 	public String url;
+	public String userIn;
 	public double latitude;
 	public double longitude;
 	public String tempUnits;
@@ -18,10 +19,13 @@ public class WeatherData {
 	public int weatherCode;
 	public String condition;
 	public String city;
+	public String[] cities;
+	public boolean us_measure;
 	
 	public WeatherData(String lo) {
 		boolean valid = true;
-		boolean us_measure = true;
+		us_measure = true;
+		userIn = lo;
 		
 		String link = String.format("https://geocoding-api.open-meteo.com/v1/search?name=%s&count=10&language=en&format=json",lo);
 		String locationInfo = Main.ConnectAPI(link); 
@@ -32,7 +36,7 @@ public class WeatherData {
 				
 		if (valid) {
 			locationInfo = locationInfo.substring(locationInfo.indexOf(","));
-			String[] cities = locationInfo.split("\\{"); //removes extra { in JSON data, splits cities w/ same name.
+			cities = locationInfo.split("\\{"); //removes extra { in JSON data, splits cities w/ same name.
 			multipleCities = (cities.length > 1) ? true : false;
 			listIndex = 0;
 			
@@ -41,46 +45,20 @@ public class WeatherData {
 				cities[i] = cities[i].replaceAll("}", " ");
 			}
 			if(multipleCities){
-				city = String.format("%s, %s",lo.replaceAll("\\+", " "), WeatherData.parseData("admin1", cities[listIndex]));
+				city = String.format("%s, %s",userIn.replaceAll("\\+", " "), WeatherData.parseData("admin1", cities[listIndex]));
 				setWeatherData(cities[listIndex],us_measure);
 			}else{
-				city = String.format("%s, %s",lo.replaceAll("\\+", " "), WeatherData.parseData("admin1", cities[0]));
+				city = String.format("%s, %s",userIn.replaceAll("\\+", " "), WeatherData.parseData("admin1", cities[0]));
 				setWeatherData(cities[0],us_measure);
 			}
 		}
-			
-				
-			/* USED TO: iterate over cities to make sure we're checking the right place
-			 * before collecting weatherData
-			 * 
-			 * TODO: Make this segment work by either showing a list or just assuming the first in list w/ 
-			 * a next button
-			 */
-			
-//			for (int i = 0;i<cities.length;i++) {
-//					System.out.printf("%s, %s, %s? (yes/no): ",cityName.replaceAll("\\+", " "), WeatherData.parseData("admin1", cities[i]),WeatherData.parseData("admin2", cities[i]));
-//						answer = sc.nextLine();
-//						if (answer.toLowerCase().equals("yes")) {
-//							locationInfo = cities[i];
-//							break;
-//						}
-//						else { //if we run out of options, invalid city: prompt user to try again
-//							if (i == cities.length-1) {
-//								valid = false; 
-//								System.out.println("City not found.");
-//							}
-//						}
-//					}
-//				}
-				else;
-					// OUTPUT "City not found"
+		else;
+		// OUTPUT "City not found"
 				
 /*TODO: 
  * Implement button for US/Global Measurements
- * Implement city not found error
- * Implement arrows for list of cities possible
- * Call constructor through this one.
- * */ 				
+ * Implement city not found error handle
+*/ 				
 	}
 	
 	
@@ -122,6 +100,29 @@ public class WeatherData {
 		time = numTime + time.substring(time.indexOf(":"));
 	}
 	
+	public void nextCity() {
+		if (!multipleCities)
+			return;
+		else {
+			listIndex = (listIndex + 1) % cities.length;
+			city = String.format("%s, %s",userIn.replaceAll("\\+", " "), WeatherData.parseData("admin1", cities[listIndex]));
+			setWeatherData(cities[listIndex],us_measure);
+			System.out.println(listIndex);
+		}
+	}
+	
+	public void prevCity() {
+		if(!multipleCities)
+			return;
+		else {
+			listIndex--;
+			if (listIndex < 0)
+				listIndex = cities.length-1;
+			city = String.format("%s, %s",userIn.replaceAll("\\+", " "), WeatherData.parseData("admin1", cities[listIndex]));
+			setWeatherData(cities[listIndex],us_measure);
+			System.out.println(listIndex);
+		}
+	}
 	/*
 	 * method takes the string we're looking for in our string of data,finds the index of the value
 	 * returns index

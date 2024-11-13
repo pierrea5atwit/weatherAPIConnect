@@ -12,6 +12,8 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 
 public class appGUI extends JFrame {
+	WeatherData weather;
+	
 	public appGUI() {
 		super("WeatherApp");
 		setSize(450,650);
@@ -30,27 +32,28 @@ public class appGUI extends JFrame {
 		search.setFont(new Font("Dialog",Font.PLAIN,24)); //Font constructor (name, font 'value', font size)
 		add(search);
 		
-		//weatherImage
-		JLabel weatherImg = new JLabel(loadImage("src/Icons/clear.png"));
-		weatherImg.setBounds(0,125,450,217);
-		add(weatherImg);
-		
-		//tempText
-		JLabel temperatureText = new JLabel("10°C");
+		//Temperature text
+		JLabel temperatureText = new JLabel("XX°");
 		temperatureText.setBounds(0,350,450,54);
 		temperatureText.setFont(new Font("Dialog",Font.PLAIN,24));
 		temperatureText.setHorizontalAlignment(SwingConstants.CENTER);
 		add(temperatureText);
 		
+		//Windspeed text
+		JLabel windText = new JLabel("<html><b>Windspeed<b> <html>");
+		windText.setFont(new Font ("Dialog", Font.PLAIN,16));
+		windText.setBounds(315,500,85,55);
+		add(windText);
+		
 		//city text
-		JLabel cityText = new JLabel("CITY NOT FOUND");
+		JLabel cityText = new JLabel("Enter City Above!");
 		cityText.setBounds(0,400,450,54);
 		cityText.setFont(new Font("Dialog",Font.PLAIN,30));
 		cityText.setHorizontalAlignment(SwingConstants.CENTER);
 		add(cityText);
 		
 		//TIME text
-		JLabel timeText = new JLabel("<html><b>Current Time<b> ");
+		JLabel timeText = new JLabel("<html><b>Time<b> XX:XX<html>");
 		timeText.setFont(new Font("Dialog",Font.PLAIN,16));
 		timeText.setBounds(90,490,85,55);
 		add(timeText);
@@ -59,17 +62,16 @@ public class appGUI extends JFrame {
 		JLabel humidityImage = new JLabel(loadImage("src/Icons/clock.png"));
 		humidityImage.setBounds(15,500,85,55);
 		add(humidityImage);
+
+		//weatherImage
+		JLabel weatherImg = new JLabel(loadImage("src/Icons/clear.png"));
+		weatherImg.setBounds(0,125,450,217);
+		add(weatherImg);
 		
 		//windspeed pic
 		JLabel windspeedImage = new JLabel(loadImage("src/Icons/windspeed.png"));
 		windspeedImage.setBounds(220,500,74,66);
 		add(windspeedImage);
-		
-		//windspeed text
-		JLabel windText = new JLabel("<html><b>Windspeed<b> <html>");
-		windText.setFont(new Font ("Dialog", Font.PLAIN,16));
-		windText.setBounds(315,500,85,55);
-		add(windText);
 		
 		//searchButton
 		JButton searchButton = new JButton(loadImage("src/Icons/search.png"));
@@ -81,8 +83,8 @@ public class appGUI extends JFrame {
 					String input = search.getText().replaceAll(" ", "+");
 					if (input.replaceAll("\\s","").length() <= 0)
 						return;
-					WeatherData weather = new WeatherData(input);
-											
+					weather = new WeatherData(input);
+					
 					if ((weather.condition).toLowerCase().contains("cloudy")){
 						weatherImg.setIcon(loadImage("src/Icons/cloudy.png"));
 					}
@@ -99,7 +101,7 @@ public class appGUI extends JFrame {
 					cityText.setText(weather.city);
 					temperatureText.setText(String.format("<html>%.1f%s<html>",weather.temperature, weather.tempUnits));
 					windText.setText(String.format("<html><b>Windspeed</b> %.1f<html>",weather.windSpeed) + weather.speedUnits);
-					timeText.setText(String.format("<html><b>Current Time<b> %s<html>",weather.time));
+					timeText.setText(String.format("<html><b>As of time:<b> %s<html>",weather.time));
 					/* TODO: Figure out how to represent missing cities' data w/o errors
 					 * Add a relevant weather field to replace humidity
 					 * Improve runtime
@@ -115,7 +117,11 @@ public class appGUI extends JFrame {
 		arrowUp.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
+				weather.nextCity();
+				cityText.setText(weather.city);
+				temperatureText.setText(String.format("<html>%.1f%s<html>",weather.temperature, weather.tempUnits));
+				windText.setText(String.format("<html><b>Windspeed</b> %.1f<html>",weather.windSpeed) + weather.speedUnits);
+				timeText.setText(String.format("<html><b>As of time:<b> %s<html>",weather.time));
 			}
 		});
 		add(arrowUp);
@@ -124,6 +130,19 @@ public class appGUI extends JFrame {
 		JButton arrowDown = new JButton(loadImage("src/Icons/cloudy.png"));
 		arrowDown.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		arrowDown.setBounds(375,170,47,45);
+		arrowDown.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+//				String input = search.getText().replaceAll(" ", "+");
+//				WeatherData weather = new WeatherData(input);
+//				
+				weather.prevCity();
+				cityText.setText(weather.city);
+				temperatureText.setText(String.format("<html>%.1f%s<html>",weather.temperature, weather.tempUnits));
+				windText.setText(String.format("<html><b>Windspeed</b> %.1f<html>",weather.windSpeed) + weather.speedUnits);
+				timeText.setText(String.format("<html><b>As of time:<b> %s<html>",weather.time));
+			}
+		});
 		add(arrowDown);
 	}
 	
