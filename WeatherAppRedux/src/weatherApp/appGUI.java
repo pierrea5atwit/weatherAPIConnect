@@ -1,5 +1,6 @@
 package weatherApp;
 
+import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -59,19 +60,19 @@ public class appGUI extends JFrame {
 		add(timeText);
 		
 		//humidity picture
-		JLabel humidityImage = new JLabel(loadImage("src/Icons/clock.png"));
-		humidityImage.setBounds(15,500,85,55);
-		add(humidityImage);
+		JLabel clockImg = new JLabel(loadImage("src/Icons/clock.png"));
+		clockImg.setBounds(15,500,85,55);
+		add(clockImg);
 
-		//weatherImage
+		//weatherImage, 245x217 pixels
 		JLabel weatherImg = new JLabel(loadImage("src/Icons/clear.png"));
 		weatherImg.setBounds(0,125,450,217);
 		add(weatherImg);
 		
-		//windspeed pic
-		JLabel windspeedImage = new JLabel(loadImage("src/Icons/windspeed.png"));
-		windspeedImage.setBounds(220,500,74,66);
-		add(windspeedImage);
+		//windspeed picture
+		JLabel windspeedImg = new JLabel(loadImage("src/Icons/windspeed.png"));
+		windspeedImg.setBounds(220,500,74,66);
+		add(windspeedImg);
 		
 		//searchButton
 		JButton searchButton = new JButton(loadImage("src/Icons/search.png"));
@@ -103,15 +104,33 @@ public class appGUI extends JFrame {
 					windText.setText(String.format("<html><b>Windspeed</b> %.1f<html>",weather.windSpeed) + weather.speedUnits);
 					timeText.setText(String.format("<html><b>As of time:<b> %s<html>",weather.time));
 					/* TODO: Figure out how to represent missing cities' data w/o errors
-					 * Add a relevant weather field to replace humidity
-					 * Improve runtime
 					 * */
 				}
 		});
 		add(searchButton);
 		
-		//Up Arrow Button (previous city)
-		JButton arrowUp = new JButton(loadImage("src/Icons/cloudy.png"));
+		//switch measurement button
+		JButton measurement = new JButton("*F / *C");
+		measurement.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		measurement.setBounds(15,65,175,45);
+		measurement.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				weather.us_measure = !weather.us_measure;
+				if(weather.us_measure) {
+				}
+				else {
+				}
+				//TODO: Create method to update weather object w/ measurements
+				temperatureText.setText(String.format("<html>%.1f%s<html>",weather.temperature, weather.tempUnits));
+				windText.setText(String.format("<html><b>Windspeed</b> %.1f<html>",weather.windSpeed) + weather.speedUnits);
+			}
+		});
+		add(measurement);
+		
+		//Up Arrow Button (next city)
+		JButton arrowUp = new JButton("↑");
+		arrowUp.setFont(new Font("Dialog",Font.BOLD,20));
 		arrowUp.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		arrowUp.setBounds(375,130,47,45);
 		arrowUp.addActionListener(new ActionListener() {
@@ -126,8 +145,9 @@ public class appGUI extends JFrame {
 		});
 		add(arrowUp);
 		
-		//Down Arrow Button (next city)
-		JButton arrowDown = new JButton(loadImage("src/Icons/cloudy.png"));
+		//Down Arrow Button (previous city)
+		JButton arrowDown = new JButton("↓");
+		arrowDown.setFont(new Font("Dialog",Font.BOLD,20));
 		arrowDown.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		arrowDown.setBounds(375,170,47,45);
 		arrowDown.addActionListener(new ActionListener() {

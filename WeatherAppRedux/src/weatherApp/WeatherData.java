@@ -62,7 +62,6 @@ public class WeatherData {
 	}
 	
 	
-	
 	public void setWeatherData(String data,boolean US) {
 		latitude = Double.parseDouble(parseData("latitude", data));
 		longitude = Double.parseDouble(parseData("longitude", data));
@@ -86,10 +85,10 @@ public class WeatherData {
 		time = time.substring(time.indexOf("T")+1);
 		
 		int numTime = Integer.parseInt(time.substring(0,time.indexOf(":")));
-		numTime -= 4;
+		numTime -= 5;
 		
 		if (US) {
-			numTime = (numTime % 12);
+			numTime = (((numTime % 12)+12)%12);
 			if (numTime == 0)
 				numTime = 12;
 			tempUnits = "°F";
@@ -107,7 +106,6 @@ public class WeatherData {
 			listIndex = (listIndex + 1) % cities.length;
 			city = String.format("%s, %s",userIn.replaceAll("\\+", " "), WeatherData.parseData("admin1", cities[listIndex]));
 			setWeatherData(cities[listIndex],us_measure);
-			System.out.println(listIndex);
 		}
 	}
 	
@@ -120,7 +118,6 @@ public class WeatherData {
 				listIndex = cities.length-1;
 			city = String.format("%s, %s",userIn.replaceAll("\\+", " "), WeatherData.parseData("admin1", cities[listIndex]));
 			setWeatherData(cities[listIndex],us_measure);
-			System.out.println(listIndex);
 		}
 	}
 	/*
