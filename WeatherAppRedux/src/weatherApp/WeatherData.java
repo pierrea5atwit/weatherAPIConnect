@@ -5,26 +5,15 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class WeatherData {
-	public int listIndex;
-	public boolean multipleCities;
-	public double temperature;
-	public double windSpeed;
-	public String url;
-	public String userIn;
-	public double latitude;
-	public double longitude;
-	public String tempUnits;
-	public String speedUnits;
-	public String time;
-	public int weatherCode;
-	public String condition;
-	public String city;
+	public int listIndex, weatherCode;
+	public boolean multipleCities, us_measure, valid;
+	public double temperature, windSpeed, latitude, longitude;
+	public String url, userIn, tempUnits, speedUnits, time, condition, city;
 	public String[] cities;
-	public boolean us_measure;
 	
 	public WeatherData(String lo) {
-		boolean valid = true;
-		us_measure = true;
+		valid = true;
+		us_measure = false;
 		userIn = lo;
 		
 		String link = String.format("https://geocoding-api.open-meteo.com/v1/search?name=%s&count=10&language=en&format=json",lo);
@@ -46,23 +35,23 @@ public class WeatherData {
 			}
 			if(multipleCities){
 				city = String.format("%s, %s",userIn.replaceAll("\\+", " "), WeatherData.parseData("admin1", cities[listIndex]));
-				setWeatherData(cities[listIndex],us_measure);
+				setWeatherData(cities[listIndex]);
 			}else{
 				city = String.format("%s, %s",userIn.replaceAll("\\+", " "), WeatherData.parseData("admin1", cities[0]));
-				setWeatherData(cities[0],us_measure);
+				setWeatherData(cities[0]);
 			}
 		}
-		else;
+		else
+			noData();
 		// OUTPUT "City not found"
 				
 /*TODO: 
- * Implement button for US/Global Measurements
  * Implement city not found error handle
 */ 				
 	}
 	
 	
-	public void setWeatherData(String data,boolean US) {
+	public void setWeatherData(String data) {
 		latitude = Double.parseDouble(parseData("latitude", data));
 		longitude = Double.parseDouble(parseData("longitude", data));
 		
@@ -87,7 +76,7 @@ public class WeatherData {
 		int numTime = Integer.parseInt(time.substring(0,time.indexOf(":")));
 		numTime -= 5;
 		
-		if (US) {
+		if (us_measure) {
 			numTime = (((numTime % 12)+12)%12);
 			if (numTime == 0)
 				numTime = 12;
@@ -96,7 +85,17 @@ public class WeatherData {
 			speedUnits = "mph";
 			windSpeed = (windSpeed/1.609344);
 		}
+		else {
+			tempUnits = "°C";
+			speedUnits = "km/h";
+		}
 		time = numTime + time.substring(time.indexOf(":"));
+	}
+	
+	public void noData() {
+		multipleCities = us_measure = false;
+		temperature = windSpeed = latitude = longitude = 0.0;
+		tempUnits = speedUnits = condition = city = time = "N/A";
 	}
 	
 	public void nextCity() {
@@ -105,7 +104,7 @@ public class WeatherData {
 		else {
 			listIndex = (listIndex + 1) % cities.length;
 			city = String.format("%s, %s",userIn.replaceAll("\\+", " "), WeatherData.parseData("admin1", cities[listIndex]));
-			setWeatherData(cities[listIndex],us_measure);
+			setWeatherData(cities[listIndex]);
 		}
 	}
 	
@@ -117,7 +116,7 @@ public class WeatherData {
 			if (listIndex < 0)
 				listIndex = cities.length-1;
 			city = String.format("%s, %s",userIn.replaceAll("\\+", " "), WeatherData.parseData("admin1", cities[listIndex]));
-			setWeatherData(cities[listIndex],us_measure);
+			setWeatherData(cities[listIndex]);
 		}
 	}
 	/*
@@ -132,14 +131,14 @@ public class WeatherData {
 		return y;
 	}
 	
-	/*
+	/**
 	 * method used to replace repetitive substring usage to get pieces of string-ified JSON data
 	 * returns string, still needs to use parseInt/parseDouble for string returned
 	 * 
 	 * @param var - keyword we're looking for
 	 * @param src - 'source', our string of data
-	 * */
-	public static String parseData(String var,String src) {
+	 */
+	public static String parseData(String var, String src) {
 		int x = findIndex(var,src);
 		String result;
 		try {
@@ -151,7 +150,7 @@ public class WeatherData {
 		
 	}
 	
-	/* returns string that associated with weather codes
+	/* returns string associated with each weather code
 	 */
 	public String weatherCode(int c) {
 		String cond = "";
@@ -191,6 +190,22 @@ public class WeatherData {
 	/* toString method for weatherData objects, prints relevant information */
 	public String toString() {
 		return String.format("'s weather as of %s is %s at approximately %.1f%s, with windspeeds of %.1f%s.",time,condition,temperature,tempUnits,windSpeed,speedUnits);
+	}
+
+
+	public static void updateWeather(WeatherData obj) {
+		if (obj.us_measure) {
+			obj.tempUnits = "°F";
+			obj.temperature = (obj.temperature*1.8)+32;
+			obj.speedUnits = "mph";
+			obj.windSpeed /= 1.609344;
+		}
+		else{
+			obj.tempUnits = "°C";
+			obj.temperature = (obj.temperature - 32)/1.8;
+			obj.speedUnits = "km/h";
+			obj.windSpeed *= 1.609344;
+		}
 	}
 	
 }

@@ -14,6 +14,9 @@ import javax.swing.*;
 
 public class appGUI extends JFrame {
 	WeatherData weather;
+	JTextField search;
+	JLabel temperatureText,windText,cityText,timeText,clockImg,weatherImg,windspeedImg;
+	JButton searchButton, arrowUp, arrowDown, measurement;
 	
 	public appGUI() {
 		super("WeatherApp");
@@ -28,33 +31,33 @@ public class appGUI extends JFrame {
 
 	private void addGUIComponents() {
 		//Text field for search
-		JTextField search = new JTextField();
+		search = new JTextField();
 		search.setBounds(15,15,351,45); //x, y, width, height
 		search.setFont(new Font("Dialog",Font.PLAIN,24)); //Font constructor (name, font 'value', font size)
 		add(search);
 		
 		//Temperature text
-		JLabel temperatureText = new JLabel("XX°");
+		temperatureText = new JLabel("XX°");
 		temperatureText.setBounds(0,350,450,54);
 		temperatureText.setFont(new Font("Dialog",Font.PLAIN,24));
 		temperatureText.setHorizontalAlignment(SwingConstants.CENTER);
 		add(temperatureText);
 		
 		//Windspeed text
-		JLabel windText = new JLabel("<html><b>Windspeed<b> <html>");
+		windText = new JLabel("<html><b>Windspeed<b> XX<html>");
 		windText.setFont(new Font ("Dialog", Font.PLAIN,16));
 		windText.setBounds(315,500,85,55);
 		add(windText);
 		
 		//city text
-		JLabel cityText = new JLabel("Enter City Above!");
+		cityText = new JLabel("Enter City Above!");
 		cityText.setBounds(0,400,450,54);
 		cityText.setFont(new Font("Dialog",Font.PLAIN,30));
 		cityText.setHorizontalAlignment(SwingConstants.CENTER);
 		add(cityText);
 		
 		//TIME text
-		JLabel timeText = new JLabel("<html><b>Time<b> XX:XX<html>");
+		timeText = new JLabel("<html><b>Time<b> XX:XX<html>");
 		timeText.setFont(new Font("Dialog",Font.PLAIN,16));
 		timeText.setBounds(90,490,85,55);
 		add(timeText);
@@ -65,17 +68,17 @@ public class appGUI extends JFrame {
 		add(clockImg);
 
 		//weatherImage, 245x217 pixels
-		JLabel weatherImg = new JLabel(loadImage("src/Icons/clear.png"));
+		weatherImg = new JLabel(loadImage("src/Icons/clear.png"));
 		weatherImg.setBounds(0,125,450,217);
 		add(weatherImg);
 		
 		//windspeed picture
-		JLabel windspeedImg = new JLabel(loadImage("src/Icons/windspeed.png"));
+		windspeedImg = new JLabel(loadImage("src/Icons/windspeed.png"));
 		windspeedImg.setBounds(220,500,74,66);
 		add(windspeedImg);
 		
 		//searchButton
-		JButton searchButton = new JButton(loadImage("src/Icons/search.png"));
+		searchButton = new JButton(loadImage("src/Icons/search.png"));
 		searchButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		searchButton.setBounds(375,13,47,45);
 		searchButton.addActionListener(new ActionListener() {
@@ -86,7 +89,10 @@ public class appGUI extends JFrame {
 						return;
 					weather = new WeatherData(input);
 					
-					if ((weather.condition).toLowerCase().contains("cloudy")){
+					if(!weather.valid){
+						weatherImg.setIcon(loadImage("src/Icons/ERROR.png"));
+					}
+					else if ((weather.condition).toLowerCase().contains("cloudy")){
 						weatherImg.setIcon(loadImage("src/Icons/cloudy.png"));
 					}
 					else if ((weather.condition).toLowerCase().contains("rain")){
@@ -99,37 +105,34 @@ public class appGUI extends JFrame {
 						weatherImg.setIcon(loadImage("src/Icons/clear.png"));
 					}
 					
+					if(!weather.valid) {
+						cityText.setText("City not found!");
+					}
+					else {
 					cityText.setText(weather.city);
 					temperatureText.setText(String.format("<html>%.1f%s<html>",weather.temperature, weather.tempUnits));
-					windText.setText(String.format("<html><b>Windspeed</b> %.1f<html>",weather.windSpeed) + weather.speedUnits);
+					windText.setText(String.format("<html><b>Windspeed</b> %.1f%s<html>",weather.windSpeed) + weather.speedUnits);
 					timeText.setText(String.format("<html><b>As of time:<b> %s<html>",weather.time));
-					/* TODO: Figure out how to represent missing cities' data w/o errors
-					 * */
+					}
 				}
 		});
 		add(searchButton);
 		
 		//switch measurement button
-		JButton measurement = new JButton("*F / *C");
+		measurement = new JButton("*F / *C");
 		measurement.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		measurement.setBounds(15,65,175,45);
 		measurement.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				weather.us_measure = !weather.us_measure;
-				if(weather.us_measure) {
-				}
-				else {
-				}
-				//TODO: Create method to update weather object w/ measurements
-				temperatureText.setText(String.format("<html>%.1f%s<html>",weather.temperature, weather.tempUnits));
-				windText.setText(String.format("<html><b>Windspeed</b> %.1f<html>",weather.windSpeed) + weather.speedUnits);
+				updateMeasure();
 			}
 		});
 		add(measurement);
 		
 		//Up Arrow Button (next city)
-		JButton arrowUp = new JButton("↑");
+		arrowUp = new JButton("↑");
 		arrowUp.setFont(new Font("Dialog",Font.BOLD,20));
 		arrowUp.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		arrowUp.setBounds(375,130,47,45);
@@ -146,16 +149,13 @@ public class appGUI extends JFrame {
 		add(arrowUp);
 		
 		//Down Arrow Button (previous city)
-		JButton arrowDown = new JButton("↓");
+		arrowDown = new JButton("↓");
 		arrowDown.setFont(new Font("Dialog",Font.BOLD,20));
 		arrowDown.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		arrowDown.setBounds(375,170,47,45);
 		arrowDown.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
-//				String input = search.getText().replaceAll(" ", "+");
-//				WeatherData weather = new WeatherData(input);
-//				
+			public void actionPerformed(ActionEvent e) {	
 				weather.prevCity();
 				cityText.setText(weather.city);
 				temperatureText.setText(String.format("<html>%.1f%s<html>",weather.temperature, weather.tempUnits));
@@ -174,5 +174,11 @@ public class appGUI extends JFrame {
 			System.out.println("Resource Not Found");
 			return null;
 		}
+	}
+	
+	public void updateMeasure() {
+		WeatherData.updateWeather(weather);
+		temperatureText.setText(String.format("<html>%.1f%s<html>",weather.temperature, weather.tempUnits));
+		windText.setText(String.format("<html><b>Windspeed</b> %.1f<html>",weather.windSpeed) + weather.speedUnits);
 	}
 }
