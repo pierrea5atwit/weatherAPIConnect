@@ -29,6 +29,9 @@ public class appGUI extends JFrame {
 		addGUIComponents();
 	}
 
+	/**
+	 * Adds all buttons/UI components necessary for weather app
+	 * */
 	private void addGUIComponents() {
 		//Text field for search
 		search = new JTextField();
@@ -111,7 +114,7 @@ public class appGUI extends JFrame {
 					else {
 					cityText.setText(weather.city);
 					temperatureText.setText(String.format("<html>%.1f%s<html>",weather.temperature, weather.tempUnits));
-					windText.setText(String.format("<html><b>Windspeed</b> %.1f%s<html>",weather.windSpeed) + weather.speedUnits);
+					windText.setText(String.format("<html><b>Windspeed</b> %.1f%s<html>",weather.windSpeed, weather.speedUnits));
 					timeText.setText(String.format("<html><b>As of time:<b> %s<html>",weather.time));
 					}
 				}
@@ -166,6 +169,11 @@ public class appGUI extends JFrame {
 		add(arrowDown);
 	}
 	
+	/**
+	 * sets image/icon for buttons and other elements
+	 * 
+	 * @param path is the filepath where the img is loaded from
+	 * */
 	private ImageIcon loadImage(String path) {
 		try {
 			BufferedImage image = ImageIO.read(new File(path));
@@ -176,6 +184,9 @@ public class appGUI extends JFrame {
 		}
 	}
 	
+	/**
+	 * updates visuals when units of measure are changed
+	 * */
 	public void updateMeasure() {
 		WeatherData.updateWeather(weather);
 		temperatureText.setText(String.format("<html>%.1f%s<html>",weather.temperature, weather.tempUnits));

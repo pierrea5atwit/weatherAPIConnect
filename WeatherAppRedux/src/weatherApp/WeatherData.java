@@ -11,6 +11,12 @@ public class WeatherData {
 	public String url, userIn, tempUnits, speedUnits, time, condition, city;
 	public String[] cities;
 	
+	/**
+	 * constructor for objects of 'weatherdata' that holds geographic location and
+	 * measure of weather
+	 * 
+	 * @param lo name of the location to be found w/ open-meteo's geocoding
+	 * */
 	public WeatherData(String lo) {
 		valid = true;
 		us_measure = false;
@@ -19,13 +25,13 @@ public class WeatherData {
 		String link = String.format("https://geocoding-api.open-meteo.com/v1/search?name=%s&count=10&language=en&format=json",lo);
 		String locationInfo = Main.ConnectAPI(link); 
 		
-		//if the city isn't found, length will be < 50
+		//if the city not found, length < 50
 		if (locationInfo.length() < 50)
 			valid = false;
 				
 		if (valid) {
 			locationInfo = locationInfo.substring(locationInfo.indexOf(","));
-			cities = locationInfo.split("\\{"); //removes extra { in JSON data, splits cities w/ same name.
+			cities = locationInfo.split("\\{"); //parses cities w/ same name.
 			multipleCities = (cities.length > 1) ? true : false;
 			listIndex = 0;
 			
@@ -42,15 +48,16 @@ public class WeatherData {
 			}
 		}
 		else
-			noData();
-		// OUTPUT "City not found"
-				
-/*TODO: 
- * Implement city not found error handle
-*/ 				
+			noData();		
 	}
 	
 	
+	/**
+	 * method that updates data values for each measure in weatherData object
+	 * 
+	 * @param data geographic data for city: contains latitude, longitude, and 
+	 * 'admin' (country, state, province, etc.)
+	 * */
 	public void setWeatherData(String data) {
 		latitude = Double.parseDouble(parseData("latitude", data));
 		longitude = Double.parseDouble(parseData("longitude", data));
@@ -92,12 +99,18 @@ public class WeatherData {
 		time = numTime + time.substring(time.indexOf(":"));
 	}
 	
+	/**
+	 * defaults all display values in case city not found or doesn't exist
+	 * */
 	public void noData() {
 		multipleCities = us_measure = false;
 		temperature = windSpeed = latitude = longitude = 0.0;
 		tempUnits = speedUnits = condition = city = time = "N/A";
 	}
 	
+	/**
+	 * reset weatherData object to next city w/ same name
+	 * */
 	public void nextCity() {
 		if (!multipleCities)
 			return;
@@ -108,6 +121,9 @@ public class WeatherData {
 		}
 	}
 	
+	/**
+	 * set weatherData to previous city
+	 * */
 	public void prevCity() {
 		if(!multipleCities)
 			return;
@@ -119,24 +135,25 @@ public class WeatherData {
 			setWeatherData(cities[listIndex]);
 		}
 	}
-	/*
-	 * method takes the string we're looking for in our string of data,finds the index of the value
-	 * returns index
-	 * purpose: make parsing easier 
+	/**
+	 * method takes string we're searching for in string-formatted json data, finds index of value
+	 * returns index to make parsing easier 
 	 * 
+	 * @param x is the data related to substring we're looking for
+	 * @return index of 'x'
 	 * */
-	public static int findIndex(String x,String data) {
+	public static int findIndex(String x, String data) {
 		int length = (x+"\":").length();
 		int y = data.indexOf(x+"\":") + length;
 		return y;
 	}
 	
 	/**
-	 * method used to replace repetitive substring usage to get pieces of string-ified JSON data
-	 * returns string, still needs to use parseInt/parseDouble for string returned
+	 * method used to get pieces of string formatted JSON data
 	 * 
-	 * @param var - keyword we're looking for
-	 * @param src - 'source', our string of data
+	 * @param var keyword you're searching for
+	 * @param src 'source', our string of data
+	 * @return data related to 'var', still as string and can be parsed as int or double accordingly
 	 */
 	public static String parseData(String var, String src) {
 		int x = findIndex(var,src);
@@ -150,7 +167,11 @@ public class WeatherData {
 		
 	}
 	
-	/* returns string associated with each weather code
+	/** 
+	 * method translates weather code to text
+	 * 
+	 * @param c is given weather code
+	 * @return weather associated with each code
 	 */
 	public String weatherCode(int c) {
 		String cond = "";
@@ -187,12 +208,10 @@ public class WeatherData {
 		return cond;
 	}
 	
-	/* toString method for weatherData objects, prints relevant information */
-	public String toString() {
-		return String.format("'s weather as of %s is %s at approximately %.1f%s, with windspeeds of %.1f%s.",time,condition,temperature,tempUnits,windSpeed,speedUnits);
-	}
-
-
+	/**
+	 * static updateWeather meant to switch between celsius or farenheit
+	 * @param WeatherData instance being updated
+	 * */
 	public static void updateWeather(WeatherData obj) {
 		if (obj.us_measure) {
 			obj.tempUnits = "°F";
