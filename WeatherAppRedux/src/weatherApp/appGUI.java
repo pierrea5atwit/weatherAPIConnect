@@ -107,16 +107,7 @@ public class appGUI extends JFrame {
 					else{
 						weatherImg.setIcon(loadImage("src/Icons/clear.png"));
 					}
-					
-					if(!weather.valid) {
-						cityText.setText("City not found!");
-					}
-					else {
-					cityText.setText(weather.city);
-					temperatureText.setText(String.format("<html>%.1f%s<html>",weather.temperature, weather.tempUnits));
-					windText.setText(String.format("<html><b>Windspeed</b> %.1f%s<html>",weather.windSpeed, weather.speedUnits));
-					timeText.setText(String.format("<html><b>As of time:<b> %s<html>",weather.time));
-					}
+					updateVisual(weather.valid);
 				}
 		});
 		add(searchButton);
@@ -143,10 +134,7 @@ public class appGUI extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				weather.nextCity();
-				cityText.setText(weather.city);
-				temperatureText.setText(String.format("<html>%.1f%s<html>",weather.temperature, weather.tempUnits));
-				windText.setText(String.format("<html><b>Windspeed</b> %.1f<html>",weather.windSpeed) + weather.speedUnits);
-				timeText.setText(String.format("<html><b>As of time:<b> %s<html>",weather.time));
+				updateVisual(weather.valid);
 			}
 		});
 		add(arrowUp);
@@ -160,10 +148,7 @@ public class appGUI extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {	
 				weather.prevCity();
-				cityText.setText(weather.city);
-				temperatureText.setText(String.format("<html>%.1f%s<html>",weather.temperature, weather.tempUnits));
-				windText.setText(String.format("<html><b>Windspeed</b> %.1f<html>",weather.windSpeed) + weather.speedUnits);
-				timeText.setText(String.format("<html><b>As of time:<b> %s<html>",weather.time));
+				updateVisual(weather.valid);
 			}
 		});
 		add(arrowDown);
@@ -185,11 +170,31 @@ public class appGUI extends JFrame {
 	}
 	
 	/**
-	 * updates visuals when units of measure are changed
+	 * Updates UI when units of measure are changed
 	 * */
 	public void updateMeasure() {
 		WeatherData.updateWeather(weather);
 		temperatureText.setText(String.format("<html>%.1f%s<html>",weather.temperature, weather.tempUnits));
 		windText.setText(String.format("<html><b>Windspeed</b> %.1f<html>",weather.windSpeed) + weather.speedUnits);
+		updateVisual(weather.valid);
+	}
+	
+	/**
+	 * Update UI to match weather data for given city
+	 * 
+	 * @param available suggests whether or not data is found; if not found, default data displayed
+	 * */
+	public void updateVisual(boolean available) {
+		if (available) {
+			cityText.setText(weather.city);
+			temperatureText.setText(String.format("<html>%.1f%s<html>",weather.temperature, weather.tempUnits));
+			windText.setText(String.format("<html><b>Windspeed</b> %.1f<html>",weather.windSpeed) + weather.speedUnits);
+			timeText.setText(String.format("<html><b>As of time:<b> %s<html>",weather.time));
+		}else {
+			cityText.setText("City not found!");
+			temperatureText.setText(String.format("N/A"));
+			windText.setText(String.format("<html><b>Windspeed: XX</b><html>"));
+			timeText.setText(String.format("<html><b>As of time: <b>XX:XX<html>"));
+		}
 	}
 }

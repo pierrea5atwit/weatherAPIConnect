@@ -53,7 +53,7 @@ public class WeatherData {
 	
 	
 	/**
-	 * method that updates data values for each measure in weatherData object
+	 * method updates data for each measurement in weatherData object
 	 * 
 	 * @param data geographic data for city: contains latitude, longitude, and 
 	 * 'admin' (country, state, province, etc.)
@@ -100,7 +100,7 @@ public class WeatherData {
 	}
 	
 	/**
-	 * defaults all display values in case city not found or doesn't exist
+	 * defaults all displayable values in case city not found or doesn't exist
 	 * */
 	public void noData() {
 		multipleCities = us_measure = false;
@@ -122,7 +122,7 @@ public class WeatherData {
 	}
 	
 	/**
-	 * set weatherData to previous city
+	 * Set weather object to previous city
 	 * */
 	public void prevCity() {
 		if(!multipleCities)
@@ -135,6 +135,7 @@ public class WeatherData {
 			setWeatherData(cities[listIndex]);
 		}
 	}
+	
 	/**
 	 * method takes string we're searching for in string-formatted json data, finds index of value
 	 * returns index to make parsing easier 
@@ -149,11 +150,11 @@ public class WeatherData {
 	}
 	
 	/**
-	 * method used to get pieces of string formatted JSON data
+	 * Separates pieces of string-formatted JSON data
 	 * 
-	 * @param var keyword you're searching for
-	 * @param src 'source', our string of data
-	 * @return data related to 'var', still as string and can be parsed as int or double accordingly
+	 * @param var keyword being searched for
+	 * @param src 'source', string JSON data
+	 * @return data preceded by keyword as string. Can be parsed as int or double accordingly.
 	 */
 	public static String parseData(String var, String src) {
 		int x = findIndex(var,src);
@@ -168,7 +169,7 @@ public class WeatherData {
 	}
 	
 	/** 
-	 * method translates weather code to text
+	 * Translates weather code to text
 	 * 
 	 * @param c is given weather code
 	 * @return weather associated with each code
@@ -209,8 +210,9 @@ public class WeatherData {
 	}
 	
 	/**
-	 * static updateWeather meant to switch between celsius or farenheit
-	 * @param WeatherData instance being updated
+	 * Switches temperature units between Celsius and Fahrenheit
+	 * 
+	 * @param WeatherData 
 	 * */
 	public static void updateWeather(WeatherData obj) {
 		if (obj.us_measure) {
