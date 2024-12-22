@@ -174,8 +174,6 @@ public class appGUI extends JFrame {
 	 * */
 	public void updateMeasure() {
 		WeatherData.updateWeather(weather);
-		temperatureText.setText(String.format("<html>%.1f%s<html>",weather.temperature, weather.tempUnits));
-		windText.setText(String.format("<html><b>Windspeed</b> %.1f<html>",weather.windSpeed) + weather.speedUnits);
 		updateVisual(weather.valid);
 	}
 	
